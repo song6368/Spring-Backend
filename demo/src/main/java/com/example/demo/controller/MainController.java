@@ -8,7 +8,7 @@ public class MainController {
 	
 	@GetMapping("/")
     public String main() {
-		System.out.println("index!!!!");
+		System.out.println("index!!!");
         return "index";
     }
 }

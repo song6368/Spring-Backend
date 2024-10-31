@@ -3,6 +3,10 @@ package com.example.demo.controller;
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.util.JwtUtil;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +25,9 @@ public class UserController {
 
     @Autowired
     private PasswordEncoder passwordEncoder; // PasswordEncoder 주입
+    
+    @Autowired
+    private JwtUtil jwtUtil;
     
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
@@ -49,12 +56,22 @@ public class UserController {
     }
     
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         User user = userRepository.findByEmail(loginRequest.getEmail());
 
         if (user != null && passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            // 로그인 성공 로직
-            return ResponseEntity.ok("Login successful");
+            // 로그인 성공 시 JWT 생성
+            String token = jwtUtil.generateToken(user.getEmail());
+
+            // JWT를 쿠키로 설정
+            Cookie cookie = new Cookie("JWT", token);
+            cookie.setHttpOnly(true); // JavaScript에서 접근할 수 없도록 설정
+            cookie.setSecure(true); // HTTPS를 사용할 때만 쿠키 전송
+            cookie.setPath("/"); // 쿠키의 유효 경로 설정
+            cookie.setMaxAge(60 * 60 * 10); // 쿠키 만료 시간 설정 (10시간)
+
+            response.addCookie(cookie); // 응답에 쿠키 추가
+            return ResponseEntity.ok("Login successful"); // 로그인 성공 응답
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
