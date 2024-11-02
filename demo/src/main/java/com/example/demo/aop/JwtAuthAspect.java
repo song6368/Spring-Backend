@@ -28,7 +28,8 @@ public class JwtAuthAspect {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @Around("execution(* com.example.demo.controller.PostController.*(..))")
+    @Around("execution(* com.example.demo.controller.PostController.*(..)) || " +
+            "execution(* com.example.demo.controller.CommentController.*(..)) || ")
     public Object controllerMethods(ProceedingJoinPoint joinPoint) throws Throwable {
         checkJwtAuthorization(); // JWT 인증 체크
 
