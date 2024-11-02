@@ -8,6 +8,6 @@ public interface CommentService {
     Comment createComment(Comment comment);
     List<Comment> getCommentsByPostId(Long postId);
     Comment getCommentById(Long commentId);
-    Comment updateComment(Long commentId, Comment comment);
-    boolean deleteComment(Long commentId);
+    Comment updateComment(Long commentId, Comment comment, Long tokenUserId);
+    boolean deleteComment(Long commentId, Long tokenUserId);
 }

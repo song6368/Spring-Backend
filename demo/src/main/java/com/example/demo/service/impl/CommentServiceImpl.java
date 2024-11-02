@@ -13,43 +13,51 @@ import java.util.List;
 @Service
 public class CommentServiceImpl implements CommentService {
 
-    @Autowired
-    private CommentRepository commentRepository;
+	@Autowired
+	private CommentRepository commentRepository;
 
-    @Override
-    public Comment createComment(Comment comment) {
-        comment.setCreatedAt(LocalDateTime.now());
-        comment.setUpdatedAt(LocalDateTime.now());
-        return commentRepository.save(comment);
-    }
+	@Override
+	public Comment createComment(Comment comment) {
+		comment.setCreatedAt(LocalDateTime.now());
+		comment.setUpdatedAt(LocalDateTime.now());
+		return commentRepository.save(comment);
+	}
 
-    @Override
-    public List<Comment> getCommentsByPostId(Long postId) {
-        return commentRepository.findByPostId(postId);
-    }
+	@Override
+	public List<Comment> getCommentsByPostId(Long postId) {
+		return commentRepository.findByPostId(postId);
+	}
 
-    @Override
-    public Comment getCommentById(Long commentId) {
-        return commentRepository.findById(commentId).orElse(null);
-    }
+	@Override
+	public Comment getCommentById(Long commentId) {
+		return commentRepository.findById(commentId).orElse(null);
+	}
 
-    @Override
-    public Comment updateComment(Long commentId, Comment comment) {
-        Comment existingComment = getCommentById(commentId);
-        if (existingComment != null) {
-            existingComment.setContent(comment.getContent());
-            existingComment.setUpdatedAt(LocalDateTime.now());
-            return commentRepository.save(existingComment);
-        }
-        return null; // 댓글이 존재하지 않을 경우 null 반환
-    }
+	@Override
+	public Comment updateComment(Long commentId, Comment comment, Long tokenUserId) {
+		Comment existingComment = getCommentById(commentId);
 
-    @Override
-    public boolean deleteComment(Long commentId) {
-        if (commentRepository.existsById(commentId)) {
-            commentRepository.deleteById(commentId);
-            return true; // 삭제 성공
-        }
-        return false; // 삭제할 댓글이 존재하지 않을 경우 false 반환
-    }
+		if (existingComment.getUserId() == tokenUserId) {
+			existingComment.setContent(comment.getContent());
+			existingComment.setUpdatedAt(LocalDateTime.now());
+			return commentRepository.save(existingComment);
+		}
+
+		return null; // 댓글이 존재하지 않을 경우 null 반환
+	}
+
+	@Override
+	public boolean deleteComment(Long commentId, Long tokenUserId) {
+
+		Comment existingComment = getCommentById(commentId);
+		
+		if (commentRepository.existsById(commentId)) {
+			if (existingComment.getUserId() == tokenUserId) {
+				commentRepository.deleteById(commentId);
+				return true; // 삭제 성공
+			}
+		}
+		
+		return false; // 삭제할 댓글이 존재하지 않을 경우 false 반환
+	}
 }
