@@ -17,10 +17,10 @@ public interface PostService {
     Optional<Post> getPostById(Long postId);
 
     // 게시물 업데이트
-    Post updatePost(Long postId, Post post);
+    Post updatePost(Long postId, Post post, Long userId);
 
     // 게시물 삭제
-    void deletePost(Long postId);
+    void deletePost(Long postId, Long userId);
 
     // 제목으로 게시물 검색
     List<Post> findByTitleContaining(String keyword);

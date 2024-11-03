@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.entity.Post;
 import com.example.demo.service.PostService;
+import com.example.demo.util.JwtUtil;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +19,11 @@ import java.util.Optional;
 @RequestMapping("/api/posts")
 public class PostController {
 
+	@Autowired
     private final PostService postService;
+    
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Autowired
     public PostController(PostService postService) {
@@ -32,10 +39,15 @@ public class PostController {
 
     // 게시물 생성 (POST /api/posts)
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody Post post) {
+    public ResponseEntity<Post> createPost(@RequestBody Post post, HttpServletRequest request) {
         if (post == null) {
             return ResponseEntity.badRequest().build();
         }
+        
+        Long userId = jwtUtil.getUserIdFromRequest(request);
+        
+        post.setUserId(userId);
+        
         Post createdPost = postService.createPost(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
@@ -50,18 +62,22 @@ public class PostController {
 
     // 게시물 업데이트 (PUT /api/posts/{postId})
     @PutMapping("/{postId}")
-    public ResponseEntity<Post> updatePost(@PathVariable("postId") Long postId, @RequestBody Post post) {
+    public ResponseEntity<Post> updatePost(@PathVariable("postId") Long postId, @RequestBody Post post, HttpServletRequest request) {
         if (post == null) {
             return ResponseEntity.badRequest().build();
         }
-        Post updatedPost = postService.updatePost(postId, post);
+        
+        Long userId = jwtUtil.getUserIdFromRequest(request);
+        
+        Post updatedPost = postService.updatePost(postId, post, userId);
         return ResponseEntity.ok(updatedPost);
     }
 
     // 게시물 삭제 (DELETE /api/posts/{postId})
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable("postId") Long postId) {
-        postService.deletePost(postId);
+    public ResponseEntity<Void> deletePost(@PathVariable("postId") Long postId, HttpServletRequest request) {
+    	Long userId = jwtUtil.getUserIdFromRequest(request);
+        postService.deletePost(postId, userId);
         return ResponseEntity.noContent().build();
     }
 }
