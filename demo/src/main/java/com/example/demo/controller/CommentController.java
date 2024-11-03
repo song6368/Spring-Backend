@@ -59,8 +59,8 @@ public class CommentController {
     // 댓글 수정
     @PutMapping("/{commentId}")
     public ResponseEntity<Comment> updateComment(@PathVariable("commentId") Long commentId, @RequestBody Comment comment, HttpServletRequest request) {
-    	Long tokenUserId = jwtUtil.getUserIdFromRequest(request);
-        Comment updatedComment = commentService.updateComment(commentId, comment, tokenUserId);
+    	Long userId = jwtUtil.getUserIdFromRequest(request);
+        Comment updatedComment = commentService.updateComment(commentId, comment, userId);
         return updatedComment != null ? ResponseEntity.ok(updatedComment) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 

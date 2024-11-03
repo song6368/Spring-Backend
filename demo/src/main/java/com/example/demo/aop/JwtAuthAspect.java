@@ -25,11 +25,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @ControllerAdvice(annotations = RestController.class)
 public class JwtAuthAspect {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+	@Autowired
+	private JwtUtil jwtUtil;
 
-    @Around("execution(* com.example.demo.controller.PostController.*(..)) || " +
-            "execution(* com.example.demo.controller.CommentController.*(..)) || ")
+	@Around("execution(* com.example.demo.controller.PostController.*(..)) || " +
+            "execution(* com.example.demo.controller.CommentController.*(..)) || " +
+			"execution(* com.example.demo.controller.ReplyController.*(..)) || ")
     public Object controllerMethods(ProceedingJoinPoint joinPoint) throws Throwable {
         checkJwtAuthorization(); // JWT 인증 체크
 
@@ -37,42 +38,42 @@ public class JwtAuthAspect {
         return joinPoint.proceed();
     }
 
-    private void checkJwtAuthorization() {
-        // 현재 스레드의 HttpServletRequest 객체를 가져옵니다.
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attributes == null) {
-            throw new JwtAuthenticationException("Request attributes not found");
-        }
+	private void checkJwtAuthorization() {
+		// 현재 스레드의 HttpServletRequest 객체를 가져옵니다.
+		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attributes == null) {
+			throw new JwtAuthenticationException("Request attributes not found");
+		}
 
-        HttpServletRequest request = attributes.getRequest();
-        String jwt = extractJwtFromCookies(request); // 쿠키에서 JWT 추출
+		HttpServletRequest request = attributes.getRequest();
+		String jwt = extractJwtFromCookies(request); // 쿠키에서 JWT 추출
 
-        // JWT가 없으면 예외 발생
-        if (jwt == null) {
-            throw new JwtAuthenticationException("Missing JWT token in cookies");
-        }
+		// JWT가 없으면 예외 발생
+		if (jwt == null) {
+			throw new JwtAuthenticationException("Missing JWT token in cookies");
+		}
 
-        // JWT 유효성 검사
-        if (!jwtUtil.validateToken(jwt)) {
-            throw new JwtAuthenticationException("Invalid JWT token");
-        }
-    }
+		// JWT 유효성 검사
+		if (!jwtUtil.validateToken(jwt)) {
+			throw new JwtAuthenticationException("Invalid JWT token");
+		}
+	}
 
-    private String extractJwtFromCookies(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("jwt".equalsIgnoreCase(cookie.getName())) { // 대소문자 구분 없이 쿠키 이름 확인
-                    return cookie.getValue(); // JWT 반환
-                }
-            }
-        }
-        return null; // 쿠키에서 JWT를 찾지 못한 경우 null 반환
-    }
+	private String extractJwtFromCookies(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if ("jwt".equalsIgnoreCase(cookie.getName())) { // 대소문자 구분 없이 쿠키 이름 확인
+					return cookie.getValue(); // JWT 반환
+				}
+			}
+		}
+		return null; // 쿠키에서 JWT를 찾지 못한 경우 null 반환
+	}
 
-    public static class JwtAuthenticationException extends RuntimeException {
-        public JwtAuthenticationException(String message) {
-            super(message);
-        }
-    }
+	public static class JwtAuthenticationException extends RuntimeException {
+		public JwtAuthenticationException(String message) {
+			super(message);
+		}
+	}
 }

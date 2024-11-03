@@ -34,10 +34,10 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
-	public Comment updateComment(Long commentId, Comment comment, Long tokenUserId) {
+	public Comment updateComment(Long commentId, Comment comment, Long userId) {
 		Comment existingComment = getCommentById(commentId);
 
-		if (existingComment.getUserId() == tokenUserId) {
+		if (existingComment.getUserId().equals(userId)) {
 			existingComment.setContent(comment.getContent());
 			existingComment.setUpdatedAt(LocalDateTime.now());
 			return commentRepository.save(existingComment);
@@ -47,12 +47,12 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
-	public boolean deleteComment(Long commentId, Long tokenUserId) {
+	public boolean deleteComment(Long commentId, Long userId) {
 
 		Comment existingComment = getCommentById(commentId);
 		
 		if (commentRepository.existsById(commentId)) {
-			if (existingComment.getUserId() == tokenUserId) {
+			if (existingComment.getUserId().equals(userId)) {
 				commentRepository.deleteById(commentId);
 				return true; // 삭제 성공
 			}
