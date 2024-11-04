@@ -52,6 +52,6 @@
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/song6368/Spring-Backend-DB.git
+git clone https://github.com/song6368/Spring-Backend.git
 cd Spring-Backend-DB
 ./mvnw spring-boot:run
