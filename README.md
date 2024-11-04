@@ -35,7 +35,7 @@
 ## 🛠 기술 스택
 | Category       | Technology                    |
 |----------------|-------------------------------|
-| **Language**   | ![Java](https://img.shields.io/badge/Java-%23ED8B00.svg?&style=for-the-badge&logo=java&logoColor=white) |
+| **Language**   | ![Java](https://img.shields.io/badge/Java-%23ED8B00.svg?&style=for-the-badge&logo=java&logoColor=white)JDK21 |
 | **Framework**  | ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-%236DB33F.svg?&style=for-the-badge&logo=spring-boot&logoColor=white) |
 | **Database**   | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%23316192.svg?&style=for-the-badge&logo=postgresql&logoColor=white) |
 | **Security**   | ![JWT](https://img.shields.io/badge/JWT-%23E85142.svg?&style=for-the-badge&logo=json-web-tokens&logoColor=white) |
